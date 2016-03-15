@@ -2,6 +2,7 @@ package test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class GatherAll_wuhan {
 	public static void main(String args[]) throws FileNotFoundException, IOException{
@@ -12,7 +13,7 @@ public class GatherAll_wuhan {
 //		GenerateMapPNG.CutImage(4803, 1599,708, 870);
 //      GenerateMapPNG.CutImage(4489, 1855,810, 963); //年前用的图片		
 //      GenerateMapPNG.CutImage(2482, 5538,781, 694); //3.7裁切图片，用作论文实验
-		GenerateMapPNG.DrawColoSticker();
+//		GenerateMapPNG.DrawColoSticker();
 //***数据筛选、数据融合、格式转换**	
 //      TransformCoordinate.SiftData("src/input/grid_data1.txt","src/input/grid1Sift.txt");//数据筛选
 //      TransformCoordinate.SiftData("src/input/grid_data2.txt","src/input/grid23Sift.txt");//数据筛选
@@ -50,19 +51,19 @@ public class GatherAll_wuhan {
 //		DataHandling.DataCallAlert("src/initial/grid123Call.txt", 3, 2000, "src/draw/grid123CallAlert.png");//话务量大于阈值时报警
 //***K均值算法**		
 		//初始化一个Kmean对象，将k置为5，因为绘制栅格颜色的问题，小于8
-//        Kmeans k=new Kmeans(3);  
-//        //设置原始数据集  
-//        k.setDataFileSet("src/initial/gridJointFind.txt",(float) -12);  
-//        //执行算法  
-//        k.execute();  
-//        //输出结果
-//        k.printDataArray("src/zcluster/grid123K.txt");
-//		  //得到质心
-//        ArrayList<float[]> ecioCenter = k.getEcioCenter();
-////        绘出聚类后的底图
-//        GenerateMapPNG.DrawPNG("src/zcluster/grid123K.txt","src/transform/grid123IDK.txt","src/draw/grid123K.png");     
-//        //绘出质心     
-//		GenerateMapPNG.DrawCenter(ecioCenter,"src/draw/grid123K.png","src/draw/grid123KEcioC.png");
+        Kmeans k=new Kmeans(3);  
+        //设置原始数据集  
+        k.setDataFileSet("src/initial/gridJointFind.txt",(float) -12);  
+        //执行算法  
+        k.execute();  
+        //输出结果
+        k.printDataArray("src/zcluster/grid123K.txt");
+		  //得到质心
+        ArrayList<float[]> ecioCenter = k.getEcioCenter();
+//        绘出聚类后的底图
+        GenerateMapPNG.DrawPNG("src/zcluster/grid123K.txt","src/transform/grid123IDK.txt","src/draw/grid123K.png");     
+        //绘出质心     
+		GenerateMapPNG.DrawCenter(ecioCenter,"src/draw/grid123K.png","src/draw/grid123KEcioC.png");
 //		  //评估效果
 //        Evaluate.execute("src/smooth/grid123Smooth.txt", ecioCenter, (float)-2, 4,20,3,"src/evaluate/grid123KEcioE.txt");
 //        GenerateMapPNG.DrawPNG("src/evaluate/grid123KEcioE.txt","src/transform/grid123IDKEcioE.txt","src/draw/grid123KEcioE.png");
