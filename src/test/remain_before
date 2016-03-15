@@ -1,0 +1,198 @@
+// 		DataHanding();//数据融合方法
+//		QuickSort();//对ecio进行排序并得到分级时的对应的ecio值，分别为10%，10%，15%，15%，15%，15%，10%，10%
+//		PaintAll();//画图程序输入为融合得到的数据值，武汉市地图
+//		TransformCoordinate.ReadFile();
+//		TransformCoordinate.SortGridID();
+//		TransformCoordinate.TransformPixelID();
+//		GeneratePNG.DrawPNG();
+//		GeneratePNG.beforeCut("src/output/wuhan_grid.png","src/pngmap/",256);
+
+private static int DataHanding() { //数据融合函数
+		return 1;
+		  
+	   }
+	
+	
+	
+	private static float[] QuickSort() {
+		System.out.println("QuickSort()");	
+		int Line = DataHanding();
+		
+		BufferedReader reader = null;
+		File infile = new File("src/output/final_input.txt");
+		String read ;
+		String[] tokens = new String[2];
+		float[] arra = new float[Line];
+	  	float[] ecio = new float[7];
+	  	//double[] weight = { 0.1,0.2,0.35,0.5,0.65,0.8,0.9};
+		int x,y;
+		try{
+			reader = new BufferedReader(new FileReader(infile));
+			
+			//out = new BufferedOutputStream(new FileOutputStream(outFile));
+			int  line =0;
+			while((read =reader.readLine())!=null){
+				String[] token = read.split("\t");
+				
+				arra[line] =Float.valueOf(token[1].substring(1, token[1].length()));
+				line++;
+			}
+			quickSort(arra);
+			ecio[0] = arra[(int) (arra.length*0.1)];
+			ecio[1] = arra[(int) (arra.length*0.2)];
+			ecio[2] = arra[(int) (arra.length*0.35)];
+			ecio[3] = arra[(int) (arra.length*0.5)];
+			ecio[4] = arra[(int) (arra.length*0.65)];
+			ecio[5] = arra[(int) (arra.length*0.8)];
+			ecio[6] = arra[(int) (arra.length*0.9)];
+			for(int j = 0;j<7;j++){
+				System.out.println(ecio[j]);
+			}
+			reader.close();
+		}catch (IOException e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (reader != null) {
+	            try {
+	                reader.close();
+	            } catch (IOException e1) {
+	            }
+	        }
+	    }
+		return ecio;
+	}
+	public static void quickSort(float[] arr){
+	    qsort(arr, 0, arr.length-1);
+	}
+	private static void qsort(float[] arr, int low, int high){
+		if (low < high){
+	        int pivot=partition(arr, low, high);        //将数组分为两部分
+	        qsort(arr, low, pivot-1);                   //递归排序左子数组
+	        qsort(arr, pivot+1, high);                  //递归排序右子数组
+	    }
+	}
+	private static int partition(float[] arr, int low, int high){
+	    float pivot = arr[low];     //枢轴记录
+	    while (low<high){
+	        while (low<high && arr[high]>=pivot) --high;
+	        arr[low]=arr[high];             //交换比枢轴小的记录到左端
+	        while (low<high && arr[low]<=pivot) ++low;
+	        arr[high] = arr[low];           //交换比枢轴小的记录到右端
+	    }
+	    //扫描完成，枢轴到位
+	    arr[low] = pivot;
+	    //返回的是枢轴的位置
+	    return low;
+	}
+	
+	
+	private static void PaintAll() throws FileNotFoundException, IOException {//画图函数
+		// TODO Auto-generated method stub
+		BufferedImage bimg=ImageIO.read(new FileInputStream("src/input/wuhan.png"));//调入武汉市的地图
+		//得到Graphics2D 对象
+		Graphics2D g2d=(Graphics2D)bimg.getGraphics();
+		//Frame f = new Frame();
+		//DrawCanvas drawArea = new DrawCanvas();
+		BufferedReader reader = null;
+		File file = new File("src/output/final_input.txt");//调用融合得到的数据
+		String read ;
+		//HashMap hm = new HashMap();
+		String[] tokens = new String[2];
+		float a;
+		float[] b = QuickSort(); //将分级对应的ecio传入数组b中
+//		float[] b = {1,5,9,16,23,25,27}; //将分级对应的ecio传入数组b中
+		
+		int x,y;
+		try{
+			reader = new BufferedReader(new FileReader(file));
+			//int line =0;
+			while((read =reader.readLine())!=null){
+				String[] token = read.split("\t");
+				int t  = token[0].indexOf("^");
+				int len = token[0].length();
+				tokens[0] = token[0].substring(0,t);
+				tokens[1] = token[0].substring(t+1,len);
+				a = Float.valueOf(token[1]);//话单质量ecio
+				x = Integer.valueOf(tokens[0]);//经度值
+				y = Integer.valueOf(tokens[1]);//纬度值
+				
+				
+				//对话单质量进行分级判断从而确定画笔颜色
+				
+				if(a>=(-b[0])){
+					//g2d.setColor(new Color(36,202,113));
+					g2d.setColor(new Color(0,139,0));
+					//g2d.setColor(Color.GREEN);
+				//	g2d.setColor(Color.BLUE);
+				}
+				else if(a<(-b[0])&&(a>=(-b[1]))){
+					g2d.setColor(new Color(0,205,0));
+				}
+				else if(a<(-b[1])&&(a>=(-b[2]))){
+					g2d.setColor(new Color(124,252,0));
+				}
+				else if(a<(-b[2])&&(a>=(-b[3]))){
+					
+					g2d.setColor(new Color(255,255,0));
+				}
+				else if(a<(-b[3])&&(a>=(-b[4]))){
+					g2d.setColor(new Color(255,165,0));
+				}
+				else if(a<(-b[4])&&(a>=(-b[5]))){
+					
+					g2d.setColor(new Color(255,69,0));
+				}
+				else if(a<(-b[5])&&(a>=(-b[6]))){
+					//g2d.setColor(new Color(247,84,37));
+					g2d.setColor(new Color(255,0,0));
+				}
+				else {
+					g2d.setColor(new Color(139,0,0));
+				}
+				
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));//透明度设置
+				
+				//绘图过程（“+140+25”与“-70-15”均为自己加的偏移量，这个偏移量是由于百度地图坐标与绝对经纬度坐标存在差异而添加的，对于不同的地级市这个偏移量会有所区别。）
+				//1352与1575为武汉市底图横向与纵向的总栅格量，这是按照地图左下角和右上角的经纬度计算得到的。
+				//根据武汉市地图9728*11264的像素量及总栅格数可计算得到经度方向上与纬度方向上每格所占的像素量，均为7.1左右。
+				//由于绘图时只能按整数倍像素进行绘制，若均按7像素/格绘制，会导致较大的偏移。因此这里采取前一部分按7像素/格绘制，后一部分按8像素/格进行绘制的方法，故可分为7*7,7*8,8*7,8*8这四块区域。
+				if((1352<=x)||(1575<=y)){
+					continue;
+				}
+				
+				if(x <= 1087 && y <= 1335){	
+					g2d.fillRect(x * 7 + 140+25, 11264 - (y + 1) * 7 - 70-15, 7,7);	
+				}
+				else if (1087 < x && x <= 1351){
+					if (y <= 1335){
+						g2d.fillRect(140 + 7616 + (x - 1088) * 8+25, 11264 - (y + 1) * 7 - 70-15,8, 7);
+					}
+					else {
+						g2d.fillRect(140 + 7616 + (x - 1088) * 8+25, 11264 - (9352 + (y - 1335) * 8) - 70-15, 8, 8);
+					}
+				}
+				else{
+					g2d.fillRect(140 + x * 7+25, 11264 - (9352 + (y - 1335) * 8) - 70-15, 7, 8);
+				}
+				//g2d.fillRect(x*7, (11264-y*7), 7,7);
+				//g2d.setColor(Color.RED);
+				g2d.setStroke(new BasicStroke(3));
+				//绘制图案或文字
+				//g2d.fillRect(50,50,100,100);	
+			
+				}
+			
+		}catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                }
+            }
+        }
+
+		//保存新图片
+		ImageIO.write(bimg, "PNG",new FileOutputStream("src/output/wuhan_calls_all.png")); //输出得png图片。
+	}

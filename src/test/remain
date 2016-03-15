@@ -1,0 +1,254 @@
+package test;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class TransformCoordinate{
+	//读取融合之后的数据文件，并将栅格ID分开	
+	public static void ReadFile() throws FileNotFoundException, IOException {
+		System.out.println("ReadFile()");
+		try{
+            BufferedReader bf = new BufferedReader(new FileReader("src/output/final_input.txt"));//打开文件读
+            BufferedWriter bw = new BufferedWriter(new FileWriter("src/output/intial_output.txt"));//打开文件写
+            String in = "";
+
+            while((in=bf.readLine()) != null){
+            	String[] token = in.split("\t");
+            	String[] tokens = new String[2];
+            	float ecio;		
+        		int x,y;
+        		//获得经纬度栅格ID
+    			int t  = token[0].indexOf("^");
+    			int len = token[0].length();
+    			tokens[0] = token[0].substring(0,t);
+    			tokens[1] = token[0].substring(t+1,len);
+    			//类型转换
+    			ecio = Float.parseFloat(token[1]);//话单质量ecio
+    			x = Integer.parseInt(tokens[0]);//经度栅格ID
+    			y = Integer.parseInt(tokens[1]);//纬度栅格ID
+                GridData gridData = new GridData();//定义栅格对象.
+                gridData.setEcio(ecio);
+                gridData.setLongID(x);
+                gridData.setLatID(y);
+                bw.write(gridData.toString()+"\r\n");
+            }
+            bf.close();
+            bw.close();
+        }
+        catch(FileNotFoundException fnfe){
+            fnfe.printStackTrace();
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace();
+        }
+	}	
+	//将栅格ID进行排序
+	public static void SortGridID() throws FileNotFoundException, IOException {//画图函数
+		System.out.println("SortGridID()");
+		try{
+            BufferedReader bf = new BufferedReader(new FileReader("src/output/intial_output.txt"));//打开文件读
+            BufferedWriter bw = new BufferedWriter(new FileWriter("src/output/outputID.txt"));//打开文件写
+            String in = "";
+            List<GridData> list = new ArrayList<GridData>();//产生容器对象
+//            in = bf.readLine();//读第一行
+//            bw.write(in + "\r\n");//写第一行.
+            //循环一行一行读
+            while((in=bf.readLine()) != null){
+            	String[] token = in.split(" ");
+            	float ecio;		
+        		int x,y;
+    			//类型转换
+    			ecio = Float.valueOf(token[2]);//话单质量ecio
+    			x = Integer.valueOf(token[0]);//经度栅格ID
+    			y = Integer.valueOf(token[1]);//纬度栅格ID
+                GridData gridData = new GridData();//定义栅格对象.
+                gridData.setEcio(ecio);
+                gridData.setLongID(x);
+                gridData.setLatID(y);
+                list.add(gridData);//存入容器.
+            }
+            Collections.sort(list);//排序
+            //将排序好的内容写入文件
+            for(GridData gridData:list){
+                bw.write(gridData.toString()+"\r\n");
+            }
+            bf.close();
+            bw.close();
+        }
+        catch(FileNotFoundException fnfe){
+            fnfe.printStackTrace();
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace();
+        }
+	}
+	//将栅格ID统一转换为像素ID，并生成图片
+	public static void TransformPixelID() throws FileNotFoundException, IOException {//画图函数
+		System.out.println("TransformPixelID()");
+		try{
+            BufferedReader bf = new BufferedReader(new FileReader("src/output/outputID.txt"));//打开文件读
+            BufferedWriter bw = new BufferedWriter(new FileWriter("src/output/outputPixelFloatID.txt"));//打开文件写
+            BufferedWriter bw_final = new BufferedWriter(new FileWriter("src/output/outputPixelIntID.txt"));//打开文件写
+            String in = "";
+            while((in=bf.readLine()) != null){
+            	String[] token = in.split(" ");
+            	float ecio,x,y; 
+            	int xSize,ySize;
+    			//类型转换
+    			ecio = Float.valueOf(token[2]);//话单质量ecio
+    			x = Float.valueOf(token[0]);//经度像素ID
+    			xSize = (int)(Math.floor(x*1.8) - Math.floor((x-1)*1.8));
+    			x *= 1.8;
+    			y = Float.valueOf(token[1]);//纬度像素ID
+    			ySize = (int)(Math.floor(y*1.8) - Math.floor((y-1)*1.8));
+    			y *= 1.8;
+    			//输出像素的小数坐标
+    			PixelFloatData pixelFloatData = new PixelFloatData();//定义像素对象
+    			pixelFloatData.setEcio(ecio);
+    			pixelFloatData.setLongID(x);
+    			pixelFloatData.setLatID(y);
+    			bw.write(pixelFloatData.toString()+"\r\n");
+    			//输出像素的整数坐标
+    			//!!!要考虑数据溢出的问题
+    			PixelIntData pixelIntData = new PixelIntData();//定义像素对象
+    			pixelIntData.setEcio(ecio);
+    			pixelIntData.setLongID((int)Math.floor(x));
+    			pixelIntData.setLatID((int)Math.floor(y));
+    			pixelIntData.setxSize(xSize);
+    			pixelIntData.setySize(ySize);
+    			bw_final.write(pixelIntData.toString()+"\r\n");
+            }
+            bf.close();
+            bw.close();
+            bw_final.close();
+        }
+        catch(FileNotFoundException fnfe){
+            fnfe.printStackTrace();
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace();
+        }
+	}
+}
+class GridData implements Comparable<GridData>{
+    private float ecio;    //ecio
+    private int longID;	   //经度栅格ID
+    private int latID;	   //纬度栅格ID
+    public GridData(){};
+
+    public float getEcio() {
+		return ecio;
+	}
+	public void setEcio(float ecio) {
+		this.ecio = ecio;
+	}
+	public int getLongID() {
+		return longID;
+	}
+	public void setLongID(int longID) {
+		this.longID = longID;
+	}
+	public int getLatID() {
+		return latID;
+	}
+	public void setLatID(int latID) {
+		this.latID = latID;
+	}
+    public String toString(){
+        return longID + " " + latID + " " + ecio;
+    }
+    public int compareTo(GridData other){
+    	if(this.longID!=other.longID){
+    		return  this.longID - other.longID;//升序
+    	}
+    	else{
+    		return  this.latID - other.latID;//升序
+    	}
+    }
+}
+class PixelFloatData {
+    private float ecio;    		//ecio
+    private float longID;	   //经度栅格ID
+    private float latID;	   //纬度栅格ID
+	public float getEcio() {
+		return ecio;
+	}
+	public void setEcio(float ecio) {
+		this.ecio = ecio;
+	}
+	public float getLongID() {
+		return longID;
+	}
+	public void setLongID(float longID) {
+		this.longID = longID;
+	}
+	public float getLatID() {
+		return latID;
+	}
+	public void setLatID(float latID) {
+		this.latID = latID;
+	}
+	public String toString(){
+        return longID + " " + latID + " " + ecio;
+    }
+    
+}
+class PixelIntData {
+    private float ecio;    //ecio
+    private int longID;	   //经度栅格ID
+    private int latID;	   //纬度栅格ID
+    private int xSize;      //确定像素的大小
+    private int ySize;      //确定像素的大小
+    
+	public float getEcio() {
+		return ecio;
+	}
+
+	public void setEcio(float ecio) {
+		this.ecio = ecio;
+	}
+
+	public int getLongID() {
+		return longID;
+	}
+
+	public void setLongID(int longID) {
+		this.longID = longID;
+	}
+
+	public int getLatID() {
+		return latID;
+	}
+
+	public void setLatID(int latID) {
+		this.latID = latID;
+	}
+
+	public int getxSize() {
+		return xSize;
+	}
+
+	public void setxSize(int xSize) {
+		this.xSize = xSize;
+	}
+
+	public int getySize() {
+		return ySize;
+	}
+
+	public void setySize(int ySize) {
+		this.ySize = ySize;
+	}
+
+	public String toString(){
+        return longID + " " + latID + " " + ecio + " " + xSize + " " + ySize;
+    }
+    
+}
