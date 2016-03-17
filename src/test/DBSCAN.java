@@ -15,6 +15,7 @@ public class DBSCAN  {
     private int k;  //最后Top多少簇
     private int clusterNum=0; //DBSCAN分成多少簇 
     private ArrayList<DataObject> dataSet;
+    private ArrayList<float[]> fileSet;
     private ArrayList<ArrayList<float[]>> newCluster;
 	/**
 	 * 构造函数，传入需要分成的簇数量
@@ -33,7 +34,7 @@ public class DBSCAN  {
 	 * @param dataSet
 	 */
 	public void setDataFileSet(String srcFile,float threshold) throws FileNotFoundException, IOException {
-		ArrayList<float[]> fileSet = CommonUtils.setDataFileSet(srcFile,threshold);
+		fileSet = CommonUtils.setDataFileSet(srcFile,threshold);
 		this.dataSet = new ArrayList<DataObject>();
 		for(int i=0;i<fileSet.size();i++){
 			DataObject temp = new DataObject(false,0,fileSet.get(i));//注意，temp初始化不能定义for循环外
@@ -129,39 +130,47 @@ public class DBSCAN  {
 	 */
 	public void printDataArray(String destDir) throws IOException {
 		int[] CidTop = new int[this.clusterNum];
-		int[] IDNum = new int[this.clusterNum];
-		int[] CallsNum = new int[this.clusterNum];
-		int[] GridsNum = new int[this.clusterNum];
-		HashMap<String, String> hm = CommonUtils.setCallsHm("src/smooth/grid123CallSmooth.txt");
+		int[] IDNum = new int[this.clusterNum];//存储每个簇中心的评分
+		int[] CallsNum = new int[this.clusterNum];//每个簇中心范围话务量
+		int[] GridsNum = new int[this.clusterNum];//每个簇中心范围覆盖的目标栅格数目
+		int[] clusterSize = new int[this.clusterNum];
+		int radius = 20;//覆盖范围20
+//		HashMap<String, String> hm = CommonUtils.setCallsHm("src/smooth/grid123CallSmooth.txt");
+		HashMap<String, String> hm = CommonUtils.setCallsHm("src/process/grid123CallProcess.txt");//获取话务量时需要
 		for(int i=0;i<this.clusterNum;i++){
 			IDNum[i] = 0;
 			CallsNum[i] = 0;
-			GridsNum[i] = 0;			
-		}
-		newCluster = new ArrayList<ArrayList<float[]>>();
-		for(int j=0;j<this.dataSet.size();j++){
-			int id = this.dataSet.get(j).getCid();
-			if(id>0){
-				GridsNum[id-1]++;					
-				float[] ID = this.dataSet.get(j).getID();
-				int x = (int)ID[0];
-				int y = (int)ID[1];
-				String point = x + "^" + y;
-				if(hm.containsKey(point)){  //一点与两三点数据同时出现在同一栅格。取1倍的两三点话单质量，0倍的一点话单质量
-			    	  int calls = (int)Float.parseFloat(hm.get(point));
-			    	  CallsNum[id-1] += calls;
-	//		    	  System.out.println(point+","+calls);
+			GridsNum[i] = 0;	
+			float xNum=0,yNum=0;
+			clusterSize[i] = 0;
+			for(int j=0;j<this.dataSet.size();j++){
+				if(this.dataSet.get(j).getCid()==(i+1)){//找到第i个簇的点
+					float a[] = this.dataSet.get(j).getID();
+	    			xNum += a[0];
+	    			yNum += a[1];
+	    			clusterSize[i]++;				
 				}
 			}
-		}
+			//第i个簇的中心
+    		int x = (int)Math.floor(xNum / clusterSize[i]);
+    		int y = (int)Math.floor(yNum / clusterSize[i]);
+    		System.out.println(i+":  "+clusterSize[i]+"::"+x+","+y);
+
+			//半径为radius内的目标点数目
+			GridsNum[i] = CommonUtils.PointStatistic(fileSet, new int[] {x,y}, radius);	
+			//半径为radius的栅格距离内的话务量
+			CallsNum[i] = CommonUtils.CallStatistic(hm, new int[] {x,y}, radius);
+		} 
+		newCluster = new ArrayList<ArrayList<float[]>>();
+		
 		for(int i=0;i<this.clusterNum;i++){
-			IDNum[i] = GridsNum[i] + CallsNum[i]/500;
-			System.out.println(i+1+","+GridsNum[i]+","+CallsNum[i]);			
+			IDNum[i] = GridsNum[i] + CallsNum[i]/9;
+			System.out.println(i+1+","+GridsNum[i]+","+CallsNum[i]+","+IDNum[i]);			
 		}
 //		for(int i=0;i<this.clusterNum;i++){
 //			System.out.println((i+1)+" "+IDNum[i]);
 //		}
-		CidTop = order(GridsNum);	//对簇按数量排序，取前top k的Cid
+		CidTop = order(clusterSize);	//对簇按数量排序，取前top k的Cid
 //		System.out.println("ddd"+CidTop[10]);
 		for(int i=0;i<this.k;i++){
 			ArrayList<float[]> temp = new ArrayList<float[]>();
@@ -172,6 +181,7 @@ public class DBSCAN  {
 			}			
 			newCluster.add(temp);
 		}
+//		System.out.println("ddd");
 		CommonUtils.printDataArray(destDir, newCluster);
 		System.out.println();
 //		for(int i=0;i<this.dataSet.size();i++){

@@ -34,6 +34,7 @@ public class GenerateMapPNG {
 //		 BufferedImage image = ImageIO.read(new FileInputStream("src/input/wuhan.png"));//调入武汉市的地图
 		BufferedImage image = ImageIO.read(new FileInputStream("src/input/wuhanCut.png"));//调入样本区域的地图
 //		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/grid123.png"));//绘制信号质量预警用
+//		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/grid123Call.png"));//绘制高负载用
 		BufferedImage stationMarker = ImageIO.read(new FileInputStream("src/input/20.png")); 
 		Graphics2D g2d = image.createGraphics();
 		//读txt数据
@@ -51,7 +52,7 @@ public class GenerateMapPNG {
     			pixelIntData.setxSize(Integer.parseInt(token[3]));
     			pixelIntData.setySize(Integer.parseInt(token[4]));
     			int alpha=100;
-    			int delta=50;
+    			int delta=0;
     			int station_value=0;
 				//对话单质量进行分级判断从而确定画笔颜色
 				if(pixelIntData.getEcio()>=b[0]){
@@ -60,24 +61,26 @@ public class GenerateMapPNG {
 				}
 				else if(pixelIntData.getEcio()>=b[1]){
 					g2d.setColor(new Color(0,205,0,alpha-delta));
-//					g2d.setColor(new Color(255,255,0,255));//绘制聚类图专用
+//					g2d.setColor(new Color(124,252,0,255));//绘制聚类图专用
 				}
 				else if(pixelIntData.getEcio()>=b[2]){
 					g2d.setColor(new Color(124,252,0,alpha-delta));
-//					g2d.setColor(new Color(139,0,0,255));//绘制聚类图专用
+//					g2d.setColor(new Color(255,165,0,255));//绘制聚类图专用
 				}
 				else if(pixelIntData.getEcio()>=b[3]){
-					
+//					g2d.setColor(new Color(255,0,0,255));
 					g2d.setColor(new Color(255,255,0,alpha-delta));
 				}
 				else if(pixelIntData.getEcio()>=b[4]){
+//					g2d.setColor(new Color(139,0,0,255));
 					g2d.setColor(new Color(255,165,0,alpha-delta));
 				}
 				else if(pixelIntData.getEcio()>=b[5]){
-					
+//					g2d.setColor(new Color(0,124,139,255));
 					g2d.setColor(new Color(255,69,0,alpha-delta));
 				}
 				else if(pixelIntData.getEcio()>=b[6]){
+//					g2d.setColor(new Color(0,0,255,255));
 					g2d.setColor(new Color(255,0,0,alpha-delta));
 				}
 				else if(pixelIntData.getEcio()==-1602){
@@ -87,7 +90,7 @@ public class GenerateMapPNG {
 					station_value = 1;
 				}
 				else {
-					g2d.setColor(new Color(139,0,0,alpha+delta+40));
+					g2d.setColor(new Color(139,0,0,alpha+delta));
 				}
 				
 				if(station_value==1){
@@ -127,7 +130,7 @@ public class GenerateMapPNG {
 			System.out.println(PNGDir);
 			BufferedImage image = ImageIO.read(new FileInputStream(srcFile));//调入武汉市的地图
 			BufferedImage marker = ImageIO.read(new FileInputStream("src/input/markers.png")); 
-			BufferedImage markerb = ImageIO.read(new FileInputStream("src/input/markerb.png")); 
+			BufferedImage markerb = ImageIO.read(new FileInputStream("src/input/markerw.png")); 
 			Graphics2D g2d = image.createGraphics();
 			for(int i=0;i<center.size();i++){
 	        	int x= (int)center.get(i)[0];
@@ -153,13 +156,13 @@ public class GenerateMapPNG {
 //	        	g2d.fillRect(x-4869,1241-(y-4350)-ySize,xSize,ySize);	
 	        	// g2d.fillRect(x-4803,873-(y-8792)-ySize,xSize,ySize);
 //	        	g2d.fillRect(x-4489,963-(y-8446)-ySize,xSize,ySize);  
-	        	g2d.fillRect(x-2482,694-(y-5032)-ySize,xSize,ySize);  
-//	        	if(i==0){
-//	        		g2d.drawImage(marker,x-2482-8,694-(y-5032)-25,39,25,null);
-//	        	}
-//	        	else{
-//	        		g2d.drawImage(markerb,x-2482-8,694-(y-5032)-25,39,25,null);
-//	        	}
+//	        	g2d.fillRect(x-2482,694-(y-5032)-ySize,xSize,ySize);  
+	        	if(i<3){
+	        		g2d.drawImage(marker,x-2482-8,694-(y-5032)-25,39,25,null);
+	        	}
+	        	else{
+	        		g2d.drawImage(markerb,x-2482-8,694-(y-5032)-25,39,25,null);
+	        	}
 	        } 
 			g2d.dispose();
 			ImageIO.write(image, "png", new FileOutputStream(PNGDir));
@@ -170,8 +173,8 @@ public class GenerateMapPNG {
     }
 	public static void DrawCallPNG(String srcFile, String transformDir, String PNGDir) throws FileNotFoundException, IOException {
 
-//		float[] b = TransformCoordinate.SortGridID("src/initial/grid123CallSift.txt");
-		float[] b = TransformCoordinate.SortGridID("src/initial/grid123Call.txt");
+		float[] b = TransformCoordinate.SortGridID("src/initial/grid123CallSift.txt");
+//		float[] b = TransformCoordinate.SortGridID("src/initial/grid123Call.txt");
 		TransformCoordinate.TransformPixelID(srcFile,transformDir);
 		System.out.println("DrawCalPNG()");
 		System.out.println(PNGDir);
@@ -193,7 +196,7 @@ public class GenerateMapPNG {
     			pixelIntData.setxSize(Integer.parseInt(token[3]));
     			pixelIntData.setySize(Integer.parseInt(token[4]));
     			int alpha=100;
-    			int delta=0;
+    			int delta=50;
 				//对话单质量进行分级判断从而确定画笔颜色
 				if(pixelIntData.getEcio()>=b[0]){
 //					g2d.setColor(new Color(0,139,0,alpha-delta));

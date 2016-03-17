@@ -206,8 +206,8 @@ public class DataHandling {
 			String in;
 			int xMax=0,yMax=0;
 			int xMin=1000000,yMin=1000000;
-			float coefficient=0.7f;//参考比例
-			int parameter = 7;
+			float coefficient=1f;//参考比例
+			int parameter = 3;
 			int para = (parameter-1)/2;
 			int gap=0,noGap=0;
 			
@@ -247,7 +247,7 @@ public class DataHandling {
 						float ecioAverage = ecioSum/num;
 						float ecioGap = Math.abs(ecioAverage - ecio) ;
 
-						if(ecioGap>3){
+						if(ecioGap>0){
 							float ecioNew = ecioAverage*(coefficient)+ecio*(1-coefficient);
 //							System.out.println(i+","+j+" "+ecioNew);
 							gridData.setEcio(ecioNew);
@@ -422,8 +422,8 @@ public class DataHandling {
 				 	}
 				}
 			}
-//			GenerateMapPNG.DrawCenter(center, "src/input/wuhanCut.png", PNGDir);
-			GenerateMapPNG.DrawCenter(center, "src/draw/grid123Call.png", PNGDir);
+			GenerateMapPNG.DrawCenter(center, "src/draw/station.png", PNGDir);
+//			GenerateMapPNG.DrawCenter(center, "src/draw/grid123Call.png", PNGDir);
             bf.close();
 //    		System.out.println("xMax:"+xMax+",xMin:"+xMin);	
 //    		System.out.println("yMax:"+yMax+",yMin:"+yMin);		

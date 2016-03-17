@@ -224,14 +224,49 @@ public class CommonUtils {
      			   continue;
      		   }
  			   String p = m+"^"+n;
+// 			  System.out.println(p);
  			   if(hm.containsKey(p)){//该栅格周围有两三点的数据存在
- 				  num += Integer.parseInt(hm.get(p));
+ 				  num += Float.valueOf(hm.get(p));
  				  count++;
  			   }   
  		   	}
      	 }
-		int average = num / count;
-		return average;		
+//		 System.out.println(count);
+		 int average = num / count;
+		 return average;		
+	}
+	public static int PointStatistic(ArrayList<float[]> dataSet, int[] center, int radius) { 
+//		System.out.println("CallStatistic()");
+		HashMap<String, Integer> hm = new HashMap<String, Integer>();//hm 用来原始数据
+		int x = center[0];
+		int y = center[1];
+//		 System.out.println("size"+dataSet.size()+" "+x+","+y);
+		for(int i=0;i<dataSet.size();i++){
+			int p = (int) dataSet.get(i)[0];
+			int q = (int) dataSet.get(i)[1];
+			hm.put(p+"^"+q,1);
+		}		
+		int count = 0;
+		int num = 0;	
+		for(int m=x-radius;m<x+radius+1;m++){//读取以该栅格为中心49个栅格的数据			
+			if(m<0){continue;}
+ 		   	for(int n=y-radius;n<y+radius+1;n++){
+ 		   	   if(n<0){continue;}
+     		   float distance = euraDist(new float[]{x,y}, new float[]{m,n});
+     		   if(distance>radius){
+     			   continue;
+     		   }
+ 			   String p = m+"^"+n;
+// 			  System.out.println(p);
+ 			   if(hm.containsKey(p)){//该栅格周围有两三点的数据存在
+ 				  num += Float.valueOf(hm.get(p));
+ 				  count++;
+ 			   }   
+ 		   	}
+     	 }
+//		 System.out.println("c:"+count);
+//		 System.out.println("n:"+num);
+		 return count;		
 	}
 	public static String ReadJsonFile(String path) {  
         File file = new File(path);  

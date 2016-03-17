@@ -144,7 +144,7 @@ public class TransformCoordinate{
             ecioArray[6] = list.get((int) (number*0.9)).getEcio();
 			for(int j = 0;j<7;j++){
 				ecioArray[j] =  (float)(Math.round(ecioArray[j]*100))/100;
-				System.out.println(ecioArray[j]);
+//				System.out.println(ecioArray[j]);
 			}   
 //            将排序好的内容写入文件
             for(GridData gridData:list){

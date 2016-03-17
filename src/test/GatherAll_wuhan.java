@@ -38,7 +38,7 @@ public class GatherAll_wuhan {
 //		DataHandling.DataAdd("src/initial/grid123Sift.txt","src/process/grid123Process.txt");//数据增加，填补空白区域
 //		DataHandling.DataSmooth("src/process/grid123Process.txt", "src/smooth/grid123Smooth.txt");//数据平滑，去除杂点
 //		DataHandling.DataSmooth("src/smooth/grid123Smooth.txt", "src/smooth/grid123Smooth1.txt");//数据平滑，去除杂点
-//		GenerateMapPNG.DrawPNG("src/smooth/grid123Smooth.txt","src/transform/grid123ID.txt","src/draw/grid123.png");
+//		GenerateMapPNG.DrawPNG("src/process/grid123Process.txt","src/transform/grid123ID.txt","src/draw/grid123.png");
 //***绘制话务量图**	
 //		DataHandling.DataCallProcess("src/input/grid_data1.txt","src/input/grid_data2.txt","src/initial/grid123Call.txt");
 //		GenerateMapPNG.DrawCallPNG("src/initial/grid123Call.txt","src/transform/grid123ID.txt","src/draw/grid123Call.png");
@@ -47,47 +47,45 @@ public class GatherAll_wuhan {
 //		DataHandling.DataAdd("src/initial/grid123CallSift.txt","src/process/grid123CallProcess.txt");//数据增加，填补空白区域
 //		GenerateMapPNG.DrawCallPNG("src/process/grid123CallProcess.txt","src/transform/grid123ID.txt","src/draw/grid123Call.png");
 
-//		DataHandling.DataCallAlert("src/process/grid123CallProcess.txt", 3, 3000, "src/draw/grid123CallAlert.png");//话务量大于阈值时报警
+//		DataHandling.DataCallAlert("src/process/grid123CallProcess.txt", 3, 1000, "src/draw/grid123CallAlert.png");//话务量大于阈值时报警
 //		DataHandling.DataCallAlert("src/initial/grid123Call.txt", 3, 2000, "src/draw/grid123CallAlert.png");//话务量大于阈值时报警
 //***K均值算法**		
-		//初始化一个Kmean对象，将k置为5，因为绘制栅格颜色的问题，小于8
-        Kmeans k=new Kmeans(3);  
-        //设置原始数据集  
-        k.setDataFileSet("src/initial/gridJointFind.txt",(float) -12);  
-        //执行算法  
-        k.execute();  
-        //输出结果
-        k.printDataArray("src/zcluster/grid123K.txt");
-		  //得到质心
-        ArrayList<float[]> ecioCenter = k.getEcioCenter();
-//        绘出聚类后的底图
-        GenerateMapPNG.DrawPNG("src/zcluster/grid123K.txt","src/transform/grid123IDK.txt","src/draw/grid123K.png");     
-        //绘出质心     
-		GenerateMapPNG.DrawCenter(ecioCenter,"src/draw/grid123K.png","src/draw/grid123KEcioC.png");
-//		  //评估效果
-//        Evaluate.execute("src/smooth/grid123Smooth.txt", ecioCenter, (float)-2, 4,20,3,"src/evaluate/grid123KEcioE.txt");
-//        GenerateMapPNG.DrawPNG("src/evaluate/grid123KEcioE.txt","src/transform/grid123IDKEcioE.txt","src/draw/grid123KEcioE.png");
-//        Evaluate.execute("src/smooth/grid123Smooth.txt", k.getEcioCenter(), (float)-2, 4,20,2,"src/evaluate/grid123KEcioE.txt");
-//        GenerateMapPNG.DrawPNG("src/evaluate/grid123KEcioE.txt","src/transform/grid123IDKEcioE.txt","src/draw/grid123KEcioE2.png");
-
- //***DBSCAN**
-// 		//初始化一个BisectingKmeans对象，将k置为5 
-//        DBSCAN ds = new DBSCAN(3);
-// 		// 设置原始数据集
-//        ds.setDataFileSet("src/initial/gridJointFind.txt",(float) -12);
-// 		// 执行算法
-//        ds.execute();
-// 		//输出结果
-//        ds.printDataArray("src/zcluster/grid123DBS.txt");
+	   	//初始化一个Kmean对象，将k置为5，因为绘制栅格颜色的问题，小于8
+//        Kmeans k=new Kmeans(7);  
+//        //设置原始数据集  
+//        k.setDataFileSet("src/initial/gridJointFind.txt",(float) -12);  
+//        //执行算法  
+//        k.execute();  
+//        //输出结果
+//        k.printDataArray("src/zcluster/grid123K.txt");
 //		//得到质心
-//        ArrayList<float[]> Center = ds.getCenter();
+//        ArrayList<float[]> ecioCenter = k.getEcioCenter();
+//        绘出聚类后的底图
+//        GenerateMapPNG.DrawPNG("src/zcluster/grid123K.txt","src/transform/grid123IDK.txt","src/draw/grid123K.png");     
+//        绘出质心     
+//		GenerateMapPNG.DrawCenter(ecioCenter,"src/draw/gridJointFind.png","src/draw/grid123KEcioC.png");
+//		评估效果
+//        Evaluate.execute("src/process/grid123Process.txt", ecioCenter, (float)-2, 4,20,3,"src/evaluate/grid123KEcioE.txt");
+//        GenerateMapPNG.DrawPNG("src/evaluate/grid123KEcioE.txt","src/transform/grid123IDKEcioE.txt","src/draw/grid123KEcioE.png");
+ //***DBSCAN**
+ 		//初始化一个BisectingKmeans对象，将k置为5 
+        DBSCAN ds = new DBSCAN(7);
+ 		// 设置原始数据集
+        ds.setDataFileSet("src/initial/gridJointFind.txt",(float) -12);
+ 		// 执行算法
+        ds.execute();
+ 		//输出结果
+        ds.printDataArray("src/zcluster/grid123DBS.txt");
+		//得到质心
+        ArrayList<float[]> Center = ds.getCenter();
 //        //绘图
-//        GenerateMapPNG.DrawPNG("src/zcluster/grid123DBS.txt","src/transform/grid123IDDBS.txt","src/draw/grid123DBS.png");
-//        GenerateMapPNG.DrawCenter(Center,"src/draw/grid123DBS.png","src/draw/grid123DBSC.png");
-//        Evaluate.execute("src/smooth/grid123Smooth.txt", Center, (float)-2, 4,20,3,"src/evaluate/grid123DBSE.txt");
-//        GenerateMapPNG.DrawPNG("src/evaluate/grid123DBSE.txt","src/transform/grid123IDDBSE.txt","src/draw/grid123DBSE.png");
+        GenerateMapPNG.DrawPNG("src/zcluster/grid123DBS.txt","src/transform/grid123IDDBS.txt","src/draw/grid123DBS.png");
+        GenerateMapPNG.DrawCenter(Center,"src/draw/grid123DBS.png","src/draw/grid123DBSC.png");
+        Evaluate.execute("src/process/grid123Process.txt", Center, (float)-2, 4,20,3,"src/evaluate/grid123DBSE.txt");
+        GenerateMapPNG.DrawPNG("src/evaluate/grid123DBSE.txt","src/transform/grid123IDDBSE.txt","src/draw/grid123DBSE.png");
 
 		System.out.println("Over");
+		System.exit(0);
 	}
 	
 }

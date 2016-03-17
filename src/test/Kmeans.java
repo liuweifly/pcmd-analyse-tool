@@ -95,7 +95,10 @@ public class Kmeans {
 	    }	    
 		return newCenter;
 	}
-	public ArrayList<float[]> getEcioCenter() {	
+	public ArrayList<float[]> getEcioCenter() throws FileNotFoundException, IOException {	
+		
+		HashMap<String, String> hm = CommonUtils.setCallsHm("src/process/grid123CallProcess.txt");//获取话务量时需要
+
 		//加入Ecio维度重新计算质心
 		for (int i = 0; i < k; i++) {
 			int n = cluster.get(i).size();
@@ -112,74 +115,57 @@ public class Kmeans {
 				newCenter[0] = (float)Math.floor(newCenter[0] / n);
 				newCenter[1] = (float)Math.floor(newCenter[1] / n);	
 				
-				//考虑信号强度计算质心
-				int num = 0;				
-				for (int j = 0; j < n; j++) {
-					//只考虑信号强度低于-12的
-					if(cluster.get(i).get(j)[2]<-12){
-						num++;
-						newCenterEcio[0] += cluster.get(i).get(j)[0];
-						newCenterEcio[1] += cluster.get(i).get(j)[1];
-					}
-				}
-				newCenterEcio[0] = (float)Math.floor(newCenterEcio[0] / num);
-				newCenterEcio[1] = (float)Math.floor(newCenterEcio[1] / num);
-				if(num > 10){
-					newCenter[0] = (float)Math.floor((newCenter[0] + newCenterEcio[0]*3) / 4);
-					newCenter[1] = (float)Math.floor((newCenter[1] + newCenterEcio[1]*3) / 4);
-				}		
+//				//考虑信号强度计算质心
+//				int num = 0;				
+//				for (int j = 0; j < n; j++) {
+//					//只考虑信号强度低于-12的
+//					if(cluster.get(i).get(j)[2]<-12){
+//						num++;
+//						newCenterEcio[0] += cluster.get(i).get(j)[0];
+//						newCenterEcio[1] += cluster.get(i).get(j)[1];
+//					}
+//				}
+//				System.out.println(num);
+//				newCenterEcio[0] = (float)Math.floor(newCenterEcio[0] / num);
+//				newCenterEcio[1] = (float)Math.floor(newCenterEcio[1] / num);
+//				if(num > 10){
+//					newCenter[0] = (float)Math.floor((newCenter[0] + newCenterEcio[0]*3) / 4);
+//					newCenter[1] = (float)Math.floor((newCenter[1] + newCenterEcio[1]*3) / 4);
+//				}		
 			}
 			center.set(i, newCenter);
 		}	
 		
-		//对质心按所对应的簇的大小排序
+		//对质心按评分排序
 		ArrayList<float[]> newCenter = new ArrayList<float[]>();// 中心链表
-
 		List<int[]> centerNum = new ArrayList<int[]>();
+		int radius = 20; //基站的影响半径，算评价方程时用到
 
 		for(int i=0;i<k;i++){
-			int[] a = {0,0,0,0};//序号，簇中低Ec/io的栅格数目，簇的中心附近高话务量区域，综合评分
+			int[] a = {0,0,0,0};//序号，半径内目标点数目，半径内话务量数目，综合评分
 			centerNum.add(a);
 			centerNum.get(i)[0] = i;
-			int num=0;
-			for(int j=0;j< cluster.get(i).size();j++){
-				if(cluster.get(i).get(j)[2]<-11){
-					num++;
-				}
-			}
-			centerNum.get(i)[1] = num;
 			int x = (int)center.get(i)[0];
 			int y = (int)center.get(i)[1];
-			HashMap<String, String> hm = new HashMap<String, String>();//hm 用来原始数据
-			for(int j=0;j<callCenter.size();j++){
-				int m = (int)callCenter.get(j)[0];
-				int n = (int)callCenter.get(j)[1];
-				String CallNum = Integer.toString((int)callCenter.get(j)[2]);
-				hm.put(m+"^"+n,CallNum); //将二三点数据的栅格，经纬度、ecio载入hm中
-			}
-			centerNum.get(i)[2] = CommonUtils.CallStatistic(hm, new int[] {x,y}, 20);			
-//			System.out.println(i+" "+num+" "+centerNum.get(i)[2]);
-			if(centerNum.get(i)[2]<20){//如果该中心附近话务量少于20，则不予考虑建站
+
+			//半径为radius内的目标点数目
+			centerNum.get(i)[1] = CommonUtils.PointStatistic(dataSet, new int[] {x,y}, radius);	
+			//半径为radius的栅格距离内的话务量
+			centerNum.get(i)[2] = CommonUtils.CallStatistic(hm, new int[] {x,y}, radius);		
+			System.out.println(i+" "+centerNum.get(i)[1]+" "+centerNum.get(i)[2]);
+					
+			if(centerNum.get(i)[2]<0){//如果该中心附近话务量少于000，则不予考虑建站 永为true
 				centerNum.get(i)[3] = 0;
 			}
 			else{
 				//建站评价方程
-				centerNum.get(i)[3] = centerNum.get(i)[1] + centerNum.get(i)[2]/500;
+				centerNum.get(i)[3] = centerNum.get(i)[1] + centerNum.get(i)[2]/9;
 			}
 		} 
 		//排序
-	    int[] temp = {0,0,0,0}; // 记录临时中间值    
 	    for (int i = 0; i < k - 1; i++) {   
 	        for (int j = i + 1; j < k; j++) {   
 	            if (centerNum.get(i)[3] < centerNum.get(j)[3]) { // 交换两数的位置   
-//	                temp[0] = centerNum.get(i)[0]; 
-//	                temp[1] = centerNum.get(i)[3]; 
-//	                centerNum.get(i)[0] = centerNum.get(j)[0]; 
-//	                centerNum.get(i)[3] = centerNum.get(j)[3];   
-//	                centerNum.get(j)[0] = temp[0];  
-//	                centerNum.get(j)[3] = temp[1];
-//	            	temp = centerNum.get(i);
-//	            	centerNum.get(i) = centerNum.get(j);
 	            	Collections.swap(centerNum, i, j);
 	            }   
 	        }   
@@ -196,6 +182,8 @@ public class Kmeans {
 	    System.out.println("**********************************************");
 		return newCenter;
 	}
+
+
 	/**
 	 * 构造函数，传入需要分成的簇数量
 	 * 
@@ -232,24 +220,14 @@ public class Kmeans {
 	 * @return 中心点集
 	 */
 	private ArrayList<float[]> initCenters() {
-		
-//********************************************************************//
-		int callRadius = 3;
-		int alertThreshold = 1000;
-		callCenter = DataHandling.DataCallAlert("src/smooth/grid123CallSmooth.txt", callRadius, alertThreshold, 
-				"src/draw/grid123CallAlert.png");//话务量大于阈值时报警
-//*******************************************************************//		
 		ArrayList<float[]> center = new ArrayList<float[]>();
 		int[] randoms = new int[k];
 		boolean flag;
-		int length = callCenter.size();
-//		int temp = random.nextInt(length);
 		int temp = random.nextInt(dataSetLength);
 		randoms[0] = temp;
 		for (int i = 1; i < k; i++) {
 			flag = true;
 			while (flag) {
-//				temp = random.nextInt(length);
 				temp = random.nextInt(dataSetLength);
 				int j = 0;
 				while (j < i) {
@@ -264,24 +242,26 @@ public class Kmeans {
 			}
 			randoms[i] = temp;
 		}
-		// System.out.println();
-		for (int i = 0; i < k; i++) {
-//			center.add(callCenter.get(randoms[i]));// 生成初始化中心链表
-			center.add(dataSet.get(randoms[i]));// 生成初始化中心链表
-			System.out.println(center.get(i)[0]+",, "+center.get(i)[1]);
-		}
 		//设置固定中心，供评估使用
 //		center.clear();
-//        float[] a = {(float) 355.0,(float) 729.0};
-//        float[] b = {(float) 410.0,(float) 704.0};
-//        float[] c = {(float) 364.0,(float) 767.0};
+//        float[] a = {(float) 412.0,(float) 700.0};
+//        float[] b = {(float) 354.0,(float) 777.0};
+//        float[] c = {(float) 353.0,(float) 718.0};
+//        float[] d = {(float) 409.0,(float) 705.0};
+//        float[] e = {(float) 360.0,(float) 779.0};
+//        float[] f = {(float) 350.0,(float) 720.0};
+//        float[] g = {(float) 402.0,(float) 697.0};
 //        center.add(a);
-//		351.0,, 772.0
-//		420.0,, 710.0
-//		434.0,, 701.0
 //        center.add(b);
 //        center.add(c);
-
+//        center.add(d);
+//        center.add(e);
+//        center.add(f);
+//        center.add(g);
+		for (int i = 0; i < k; i++) {
+			center.add(dataSet.get(randoms[i]));// 生成初始化中心链表
+			System.out.println("init center ["+i+"]: "+center.get(i)[0]+","+center.get(i)[1]);
+		}
 		return center;
 	}
 
