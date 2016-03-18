@@ -121,18 +121,6 @@ public class Statistics {
         PrintWriter out1 = new PrintWriter(new FileWriter(writename1));
         
 	 	int m=0,n=0;
-//		for(int i=xMin;i<=xMax;i++){
-//			out1.println(i+" "+(yMinArray[i]+1)+" "+-16);
-//			out1.println(i+" "+(yMaxArray[i]+0)+" "+-6);
-//			for(int j=yMinArray[i];j<=yMaxArray[i];j++){
-//				if(hm.containsKey(i+"^"+j)) {
-//					m++;
-//				}
-//				else{
-//					n++;
-//				}
-//			}
-//		}
 		for(int i=xMin;i<=xMax;i++){
 //			out1.println(i+" "+(yMinArray[i]+1)+" "+-16);
 //			out1.println(i+" "+(yMaxArray[i]+0)+" "+-6);
@@ -211,5 +199,48 @@ public class Statistics {
         bf.close();
 		System.out.println("xMax:"+xMax+",xMin:"+xMin);	
 		System.out.println("yMax:"+yMax+",yMin:"+yMin);
+	}
+	public static void statisticFinal(String srcFile) throws FileNotFoundException, IOException {
+		 System.out.println("Statistics.statisticFinal()");
+	   	 System.out.println(srcFile);
+		 BufferedReader in = new BufferedReader(new FileReader(srcFile));
+		 BufferedReader in1 = new BufferedReader(new FileReader("src/process/grid123CallProcess.txt"));
+		 HashMap<String, String> hm1 = new HashMap<String, String>();//hm 
+		 String str,str1;
+	   	 while((str1 = in1.readLine())!=null){
+	   		  String[]  tokens1 = str1.split(" ");
+	   		  hm1.put(tokens1[0]+"^"+tokens1[1],tokens1[2]);//将一点数据的栅格，经纬度、ecio载入hm1中
+	   	 }
+	   	 int a[] = {0,0,0,0,0,0,0,0};
+	   	 int b[] = {0,0,0,0,0,0};
+	   	 int num=0;
+	   	 while((str = in.readLine())!=null){
+	   		 String[]  tokens = str.split(" ");
+	         int x = Integer.parseInt(tokens[0]);//经度栅格ID
+			 int y = Integer.parseInt(tokens[1]);//纬度栅格ID
+	   		 float ecio = Float.valueOf(tokens[2]);
+	   		 String point = x+"^"+y;
+   			 int calls = (int) Math.floor(Float.valueOf(hm1.get(point)));
+//	   		 System.out.println(tokens[2]);
+   			 if(calls>0){}
+   			 else{System.out.println("!!!  "+calls);}
+	   		 if(ecio>-8){a[0]+=calls;}
+//	   		 else if(ecio>-7){a[1]++;}
+//	   		 else if(ecio>-8){a[2]++;}
+	   		 else if(ecio>-9){a[3]+=calls;}
+	   		 else if(ecio>-10){a[4]+=calls;}
+	   		 else if(ecio>-11){a[5]+=calls;}
+	   		 else if(ecio>-12){a[6]+=calls;}
+	   		 else {
+	   			 a[7]+=calls;
+	   		 }
+	   		 num++;
+	   	  }
+	   	in.close();
+	   	in1.close();
+	   	for(int i=0;i<a.length;i++){
+	   		 System.out.println("a"+i+":"+a[i]);
+	   	}
+	    System.out.println("num:"+num);
 	}
 }

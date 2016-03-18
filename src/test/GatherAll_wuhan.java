@@ -32,12 +32,16 @@ public class GatherAll_wuhan {
 //***数据统计**
 //		Statistics.execute("src/initial/grid123Sift.txt");
 //		Statistics.execute("src/smooth/grid123Smooth.txt");
-//		Statistics.gridGapAmount("src/initial/grid12 3Sift.txt");
+//		Statistics.gridGapAmount("src/initial/grid123Sift.txt");
 //		Statistics.gridGapAmount("src/process/grid123Process.txt");
+//		Statistics.statisticFinal("src/process/grid123Process.txt");
+		Statistics.statisticFinal("src/evaluate/grid123KEcioE.txt");
+		Statistics.statisticFinal("src/evaluate/grid123DBSE.txt");
 //***绘制Ec/io图**
 //		DataHandling.DataAdd("src/initial/grid123Sift.txt","src/process/grid123Process.txt");//数据增加，填补空白区域
 //		DataHandling.DataSmooth("src/process/grid123Process.txt", "src/smooth/grid123Smooth.txt");//数据平滑，去除杂点
 //		DataHandling.DataSmooth("src/smooth/grid123Smooth.txt", "src/smooth/grid123Smooth1.txt");//数据平滑，去除杂点
+//		GenerateMapPNG.DrawPNG("src/initial/grid123Sift.txt","src/transform/grid123ID.txt","src/draw/grid123p.png");
 //		GenerateMapPNG.DrawPNG("src/process/grid123Process.txt","src/transform/grid123ID.txt","src/draw/grid123.png");
 //***绘制话务量图**	
 //		DataHandling.DataCallProcess("src/input/grid_data1.txt","src/input/grid_data2.txt","src/initial/grid123Call.txt");
@@ -69,20 +73,20 @@ public class GatherAll_wuhan {
 //        GenerateMapPNG.DrawPNG("src/evaluate/grid123KEcioE.txt","src/transform/grid123IDKEcioE.txt","src/draw/grid123KEcioE.png");
  //***DBSCAN**
  		//初始化一个BisectingKmeans对象，将k置为5 
-        DBSCAN ds = new DBSCAN(7);
- 		// 设置原始数据集
-        ds.setDataFileSet("src/initial/gridJointFind.txt",(float) -12);
- 		// 执行算法
-        ds.execute();
- 		//输出结果
-        ds.printDataArray("src/zcluster/grid123DBS.txt");
-		//得到质心
-        ArrayList<float[]> Center = ds.getCenter();
+//        DBSCAN ds = new DBSCAN(7);
+// 		// 设置原始数据集
+//        ds.setDataFileSet("src/initial/gridJointFind.txt",(float) -12);
+// 		// 执行算法
+//        ds.execute();
+// 		//输出结果
+//        ds.printDataArray("src/zcluster/grid123DBS.txt");
+//		//得到质心
+//        ArrayList<float[]> Center = ds.getCenter();
 //        //绘图
-        GenerateMapPNG.DrawPNG("src/zcluster/grid123DBS.txt","src/transform/grid123IDDBS.txt","src/draw/grid123DBS.png");
-        GenerateMapPNG.DrawCenter(Center,"src/draw/grid123DBS.png","src/draw/grid123DBSC.png");
-        Evaluate.execute("src/process/grid123Process.txt", Center, (float)-2, 4,20,3,"src/evaluate/grid123DBSE.txt");
-        GenerateMapPNG.DrawPNG("src/evaluate/grid123DBSE.txt","src/transform/grid123IDDBSE.txt","src/draw/grid123DBSE.png");
+//        GenerateMapPNG.DrawPNG("src/zcluster/grid123DBS.txt","src/transform/grid123IDDBS.txt","src/draw/grid123DBS.png");
+//        GenerateMapPNG.DrawCenter(Center,"src/draw/grid123DBS.png","src/draw/grid123DBSC.png");
+//        Evaluate.execute("src/process/grid123Process.txt", Center, (float)-2, 4,20,3,"src/evaluate/grid123DBSE.txt");
+//        GenerateMapPNG.DrawPNG("src/evaluate/grid123DBSE.txt","src/transform/grid123IDDBSE.txt","src/draw/grid123DBSE.png");
 
 		System.out.println("Over");
 		System.exit(0);
