@@ -159,7 +159,7 @@ public class Kmeans {
 			}
 			else{
 				//建站评价方程
-				centerNum.get(i)[3] = centerNum.get(i)[1] + centerNum.get(i)[2]/9;
+				centerNum.get(i)[3] = (int)(centerNum.get(i)[1]*0.5 + centerNum.get(i)[2]/10*0.5);
 			}
 		} 
 		//排序

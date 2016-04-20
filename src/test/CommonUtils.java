@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,7 +62,10 @@ public class CommonUtils {
 	            x = Integer.parseInt(token[0]);//经度栅格ID
 				y = Integer.parseInt(token[1]);//纬度栅格ID
 				ecio = Float.parseFloat(token[2]);//话单质量ecio
+//************************************************
 				if(ecio<threshold){
+//				if(ecio>threshold){//为分类的点做聚类而修改
+//************************************************					
 					dataSet.add(new float[]{x,y,ecio}); 
 				}
 	        }	
@@ -291,4 +295,63 @@ public class CommonUtils {
         }   
         return laststr;  
     } 
+	public static int StationStatistic(HashMap<String, String> hm, int[] center, int radius) { 
+//		System.out.println("CallStatistic()");	 
+		int x = center[0];
+		int y = center[1];
+		float count = 0;
+		int num = 0;	
+		for(int m=x-radius;m<x+radius+1;m++){//读取以该栅格为中心20*20个栅格的数据			
+			if(m<0){continue;}
+ 		   	for(int n=y-radius;n<y+radius+1;n++){
+ 		   	   if(n<0){continue;}
+     		   float distance = euraDist(new float[]{x,y}, new float[]{m,n});
+     		   if(distance>radius){
+     			   continue;
+     		   }
+ 			   String p = m+"^"+n;
+// 			  System.out.println(p);
+ 			   if(hm.containsKey(p)){//该栅格周围有两三点的数据存在
+// 				  num =  Integer.parseInt(hm.get(p));
+// 				  count += (float)1/(num+1603);
+ 				  num++;
+ 			   }   
+ 		   	}
+     	 }
+//		 System.out.println(count+" "+ new BigDecimal(count).setScale(0, BigDecimal.ROUND_HALF_UP));
+//		 int average = num / count;
+		 return num;		
+	}
+	public static float PointStatistic(HashMap<String, String> hm, int[] center, int radius) { 
+//		System.out.println("CallStatistic()");	 
+		int x = center[0];
+		int y = center[1];
+		float count = 0;
+		int num = 0;	
+		for(int m=x-radius;m<x+radius+1;m++){//读取以该栅格为中心20*20个栅格的数据			
+			if(m<0){continue;}
+ 		   	for(int n=y-radius;n<y+radius+1;n++){
+ 		   	   if(n<0){continue;}
+     		   float distance = euraDist(new float[]{x,y}, new float[]{m,n});
+     		   if(distance>radius){
+     			   continue;
+     		   }
+ 			   String p = m+"^"+n;
+// 			  System.out.println(p);
+ 			   if(hm.containsKey(p)){//该栅格周围有两三点的数据存在
+ 				  num =  Integer.parseInt(hm.get(p));
+ 				  if(num!=-1602){
+ 					 count += (float)1/(num+1602);
+// 					  count++;
+// 					  count += (float)1/num;
+// 					  count += num;
+ 					  
+ 				  }				  
+ 			   }   
+ 		   	}
+     	 }
+//		 System.out.println(count+" "+ new BigDecimal(count).setScale(0, BigDecimal.ROUND_HALF_UP));
+//		 int average = num / count;
+		 return count;		
+	}
 }

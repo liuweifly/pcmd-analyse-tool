@@ -9,8 +9,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Statistics {
 
@@ -74,6 +78,96 @@ public class Statistics {
 	   		 System.out.println("b"+i+":"+b[i]);
 	   	}
 	    System.out.println("num:"+num);
+	}
+	public static void pointClassify() throws FileNotFoundException, IOException {
+		System.out.println("pointClassify()");	
+		try{    
+			BufferedReader bf = new BufferedReader(new FileReader("src/initial/gridJointFind.txt"));//联合统计得到的点
+			BufferedReader bf1 = new BufferedReader(new FileReader("src/initial/station.txt"));//基站数据
+			PrintWriter out1 = new PrintWriter(new FileWriter("src/initial/pointClassify.txt"));
+			HashMap<String, String> hm = new HashMap<String, String>();//hm 用来原始数据			
+
+			String in;
+			String in1;
+			int radius=30;
+			int count=0;
+			while((in1=bf1.readLine()) != null){
+	            String[] token = in1.split(" ");
+			 	hm.put(token[0]+"^"+token[1],token[2]); //将基站的经纬度、标记值载入hm中
+            }
+			while((in=bf.readLine()) != null){
+				int x,y;
+	            String[] token = in.split(" ");
+	            x = Integer.parseInt(token[0]);//经度栅格ID
+    			y = Integer.parseInt(token[1]);//纬度栅格ID
+    			
+    			//判断每个点在distance距离范围内是否存在基站
+    			//每存在一个基站，则标记值+1，无基站-1602，有一个基站-1601，有两个基站-1600
+    			//基站每有一个点，则标记值-1/stationCount 
+    			int n = CommonUtils.StationStatistic(hm, new int[] {x,y}, radius);	  
+    			if(n!=0)count ++;
+    			int m = -1602 + n;
+    			out1.println(x+" "+y+" "+m);
+			}
+		   	bf.close();
+		   	bf1.close();
+		   	out1.close();
+		   	System.out.println(count);
+			GenerateMapPNG.DrawPNG("src/initial/pointClassify.txt","src/transform/grid123ID.txt","src/draw/pointClassify.png");
+		}catch(IOException ioe)
+	    {
+	        ioe.printStackTrace(); 
+	    }		
+	}
+	public static void stationSort() throws FileNotFoundException, IOException {
+		System.out.println("stationSort()");	
+		try{    
+			BufferedReader bf = new BufferedReader(new FileReader("src/initial/pointClassify.txt"));//联合统计得到的点
+			BufferedReader bf1 = new BufferedReader(new FileReader("src/initial/stationSift.txt"));//基站数据
+			PrintWriter out1 = new PrintWriter(new FileWriter("src/initial/stationSort.txt"));
+			HashMap<String, String> hm = new HashMap<String, String>();//hm 用来原始数据
+			List<StationData> list = new ArrayList<StationData>();//产生容器对象
+
+			String in;
+			String in1;
+			int radius=30;
+			float count=0;
+			while((in=bf.readLine()) != null){
+	            String[] token = in.split(" ");
+			 	hm.put(token[0]+"^"+token[1],token[2]); //将基站的经纬度、标记值载入hm中
+            }
+			while((in1=bf1.readLine()) != null){
+				int x,y;
+	            String[] token = in1.split(" ");
+	            StationData stationData = new StationData();//定义栅格对象.
+	            x = Integer.parseInt(token[0]);//经度栅格ID
+    			y = Integer.parseInt(token[1]);//纬度栅格ID
+    			
+    			//判断每个点在distance距离范围内是否存在基站
+    			//每存在一个基站，则标记值+1，无基站-1602，有一个基站-1601，有两个基站-1600
+    			//基站每有一个点，则标记值-1/stationCount 
+    			float n = CommonUtils.PointStatistic(hm, new int[] {x,y}, radius);	
+    			count += n;
+    			float m = -1603 - n;
+                stationData.setX(x);
+                stationData.setY(y);
+                stationData.setValue(n);
+                list.add(stationData);//存入容器.
+//    			out1.println(x+" "+y+" "+m);
+			}
+            Collections.sort(list);//排序
+            for(StationData stationData:list){
+            	out1.println(stationData.toString());
+            }
+		   	bf.close();
+		   	bf1.close();
+		   	out1.close();
+		    System.out.println(count);
+//			GenerateMapPNG.DrawPNG("src/initial/stationSort.txt","src/transform/grid123ID.txt","src/draw/stationSort.png");
+		}catch(IOException ioe)
+	    {
+	        ioe.printStackTrace(); 
+	    }		
 	}
 	public static void gridGapAmount(String srcFile) throws FileNotFoundException, IOException {
    		System.out.println("gridGapAmount()");	  
@@ -243,4 +337,47 @@ public class Statistics {
 	   	}
 	    System.out.println("num:"+num);
 	}
+}
+class StationData implements Comparable<StationData>{
+    public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public float getValue() {
+		return value;
+	}
+
+	public void setValue(float value) {
+		this.value = value;
+	}
+	private int x;    //x
+    private int y;	   //y
+    private float value;	   //value
+    public StationData(){};
+
+    public String toString(){
+        return x + " " + y + " " + new BigDecimal(value).setScale(0, BigDecimal.ROUND_HALF_UP);
+    }
+	public int compareTo(StationData other){
+    	if(other.value>this.value){
+    		return 1;
+    	}
+    	else if (other.value<this.value){
+    		return -1;
+    	}else{
+    		return 0;
+    	}
+    }
 }

@@ -32,10 +32,12 @@ public class GenerateMapPNG {
 		System.out.println("DrawMapPNG()");
 		System.out.println(PNGDir);
 //		 BufferedImage image = ImageIO.read(new FileInputStream("src/input/wuhan.png"));//调入武汉市的地图
-		BufferedImage image = ImageIO.read(new FileInputStream("src/input/wuhanCut.png"));//调入样本区域的地图
+//		BufferedImage image = ImageIO.read(new FileInputStream("src/input/wuhanCut.png"));//调入样本区域的地图
+		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/stationSort.png"));//调入样本区域的基站地图
 //		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/grid123.png"));//绘制信号质量预警用
 //		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/grid123Call.png"));//绘制高负载用
-		BufferedImage stationMarker = ImageIO.read(new FileInputStream("src/input/20.png")); 
+		BufferedImage stationMarker = ImageIO.read(new FileInputStream("src/input/20Grey.png")); 
+		BufferedImage stationMarkerBlack = ImageIO.read(new FileInputStream("src/input/20Orange.png")); 
 		Graphics2D g2d = image.createGraphics();
 		//读txt数据
 		BufferedReader reader = null;
@@ -62,6 +64,7 @@ public class GenerateMapPNG {
 				else if(pixelIntData.getEcio()>=b[1]){
 					g2d.setColor(new Color(0,205,0,alpha-delta));
 //					g2d.setColor(new Color(124,252,0,255));//绘制聚类图专用
+//					g2d.setColor(new Color(255,0,0,255));
 				}
 				else if(pixelIntData.getEcio()>=b[2]){
 					g2d.setColor(new Color(124,252,0,alpha-delta));
@@ -84,10 +87,14 @@ public class GenerateMapPNG {
 					g2d.setColor(new Color(255,0,0,alpha-delta));
 				}
 				else if(pixelIntData.getEcio()==-1602){
-					g2d.setColor(new Color(0,0,0,255));
+//					g2d.setColor(new Color(0,0,0,255));
+					continue;
 				}
-				else if(pixelIntData.getEcio()==-1603){
+				else if(pixelIntData.getEcio()<=-1603&&pixelIntData.getEcio()>=-1609){
 					station_value = 1;
+				}
+				else if(pixelIntData.getEcio()<=-1610&&pixelIntData.getEcio()>=-1673){
+					station_value = 2;
 				}
 				else {
 					g2d.setColor(new Color(139,0,0,alpha+delta));
@@ -95,6 +102,10 @@ public class GenerateMapPNG {
 				
 				if(station_value==1){
 					g2d.drawImage(stationMarker,pixelIntData.getLongID()-2482-2,694-(pixelIntData.getLatID()-5032)-18,16,18,null);
+					station_value = 0;
+				}
+				else if(station_value==2){
+					g2d.drawImage(stationMarkerBlack,pixelIntData.getLongID()-2482-2,694-(pixelIntData.getLatID()-5032)-18,16,18,null);
 					station_value = 0;
 				}
 				else{

@@ -134,7 +134,7 @@ public class DBSCAN  {
 		int[] CallsNum = new int[this.clusterNum];//每个簇中心范围话务量
 		int[] GridsNum = new int[this.clusterNum];//每个簇中心范围覆盖的目标栅格数目
 		int[] clusterSize = new int[this.clusterNum];
-		int radius = 20;//覆盖范围20
+		int radius = 10;//覆盖范围20
 //		HashMap<String, String> hm = CommonUtils.setCallsHm("src/smooth/grid123CallSmooth.txt");
 		HashMap<String, String> hm = CommonUtils.setCallsHm("src/process/grid123CallProcess.txt");//获取话务量时需要
 		for(int i=0;i<this.clusterNum;i++){
@@ -164,7 +164,7 @@ public class DBSCAN  {
 		newCluster = new ArrayList<ArrayList<float[]>>();
 		
 		for(int i=0;i<this.clusterNum;i++){
-			IDNum[i] = GridsNum[i] + CallsNum[i]/9;
+			IDNum[i] = (int)((GridsNum[i] + CallsNum[i]/1)*0.5);
 			System.out.println(i+1+","+GridsNum[i]+","+CallsNum[i]+","+IDNum[i]);			
 		}
 //		for(int i=0;i<this.clusterNum;i++){
