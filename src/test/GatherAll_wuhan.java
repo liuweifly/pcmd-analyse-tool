@@ -30,9 +30,9 @@ public class GatherAll_wuhan {
 //      GenerateMapPNG.DrawPNG("src/initial/grid23.txt","src/transform/grid123ID.txt","src/draw/grid23.png");
 //      GenerateMapPNG.DrawPNG("src/initial/grid123.txt","src/transform/grid123ID.txt","src/draw/grid123.png");
 //***数据统计**
-//		Statistics.execute("src/initial/grid123Sift.txt");
-		Statistics.pointClassify();
-		Statistics.stationSort();
+//		Statistics.execute("src/initial/grid123Sift.txt");//统计目标栅格并绘制栅格图
+		Statistics.pointClassify();//对目标栅格进行分类并制图
+//		Statistics.stationSort();
 //		Statistics.gridGapAmount("src/initial/grid123Sift.txt");
 //		Statistics.gridGapAmount("src/process/grid123Process.txt");
 //		Statistics.statisticFinal("src/process/grid123Process.txt");
@@ -52,7 +52,7 @@ public class GatherAll_wuhan {
 //		DataHandling.DataAdd("src/initial/grid123CallSift.txt","src/process/grid123CallProcess.txt");//数据增加，填补空白区域
 //		GenerateMapPNG.DrawCallPNG("src/process/grid123CallProcess.txt","src/transform/grid123ID.txt","src/draw/grid123Call.png");
 
-//		DataHandling.DataCallAlert("src/process/grid123CallProcess.txt", 3, 1000, "src/draw/grid123CallAlert.png");//话务量大于阈值时报警
+//		DataHandling.DataCallAlert("src/process/grid123CallProcess.txt", 3, 500, "src/draw/grid123CallAlert.png");//话务量大于阈值时报警
 //		DataHandling.DataCallAlert("src/initial/grid123Call.txt", 3, 2000, "src/draw/grid123CallAlert.png");//话务量大于阈值时报警
 //***K均值算法**		
 	   	//初始化一个Kmean对象，将k置为5，因为绘制栅格颜色的问题，小于8
@@ -74,7 +74,7 @@ public class GatherAll_wuhan {
 //        Evaluate.execute("src/process/grid123Process.txt", ecioCenter, (float)-2, 4,20,3,"src/evaluate/grid123KEcioE.txt");
 //        GenerateMapPNG.DrawPNG("src/evaluate/grid123KEcioE.txt","src/transform/grid123IDKEcioE.txt","src/draw/grid123KEcioE.png");
  //***DBSCAN**
-// 		//初始化一个BisectingKmeans对象，将k置为5 
+ 		//初始化一个BisectingKmeans对象，将k置为5 
 //        DBSCAN ds = new DBSCAN(3);
 // 		// 设置原始数据集
 ////        ds.setDataFileSet("src/initial/gridJointFind.txt",(float) -12);

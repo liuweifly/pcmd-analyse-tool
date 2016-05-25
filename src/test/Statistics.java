@@ -151,7 +151,7 @@ public class Statistics {
     			float m = -1603 - n;
                 stationData.setX(x);
                 stationData.setY(y);
-                stationData.setValue(n);
+                stationData.setValue(m);
                 list.add(stationData);//存入容器.
 //    			out1.println(x+" "+y+" "+m);
 			}
@@ -163,7 +163,7 @@ public class Statistics {
 		   	bf1.close();
 		   	out1.close();
 		    System.out.println(count);
-//			GenerateMapPNG.DrawPNG("src/initial/stationSort.txt","src/transform/grid123ID.txt","src/draw/stationSort.png");
+			GenerateMapPNG.DrawPNG("src/initial/stationSort.txt","src/transform/grid123ID.txt","src/draw/stationSort.png");
 		}catch(IOException ioe)
 	    {
 	        ioe.printStackTrace(); 

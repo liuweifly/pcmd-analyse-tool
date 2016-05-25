@@ -39,7 +39,7 @@ public class Station {
         }
         bw.close();
         System.out.println("StationSize: " + num);
-//        GenerateMapPNG.DrawPNG("src/initial/station.txt","src/transform/stationID.txt","src/draw/station.png");
+        GenerateMapPNG.DrawPNG("src/initial/station.txt","src/transform/stationID.txt","src/draw/station.png");
 	}
 	public static void stationTest() throws FileNotFoundException, IOException{
 		

@@ -422,6 +422,7 @@ public class DataHandling {
 				 	}
 				}
 			}
+			System.out.println(center.size());
 			GenerateMapPNG.DrawCenter(center, "src/draw/station.png", PNGDir);
 //			GenerateMapPNG.DrawCenter(center, "src/draw/grid123Call.png", PNGDir);
             bf.close();

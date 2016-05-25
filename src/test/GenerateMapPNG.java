@@ -32,10 +32,12 @@ public class GenerateMapPNG {
 		System.out.println("DrawMapPNG()");
 		System.out.println(PNGDir);
 //		 BufferedImage image = ImageIO.read(new FileInputStream("src/input/wuhan.png"));//调入武汉市的地图
-//		BufferedImage image = ImageIO.read(new FileInputStream("src/input/wuhanCut.png"));//调入样本区域的地图
-		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/stationSort.png"));//调入样本区域的基站地图
+		BufferedImage image = ImageIO.read(new FileInputStream("src/input/wuhanCut2.png"));//调入样本区域的地图
+//		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/pointClassify.png"));//I类目标栅格栅格图
+//		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/station.png"));//调入样本区域的基站地图
 //		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/grid123.png"));//绘制信号质量预警用
 //		BufferedImage image = ImageIO.read(new FileInputStream("src/draw/grid123Call.png"));//绘制高负载用
+//		BufferedImage stationMarker = ImageIO.read(new FileInputStream("src/input/20.png")); 
 		BufferedImage stationMarker = ImageIO.read(new FileInputStream("src/input/20Grey.png")); 
 		BufferedImage stationMarkerBlack = ImageIO.read(new FileInputStream("src/input/20Orange.png")); 
 		Graphics2D g2d = image.createGraphics();
@@ -58,17 +60,17 @@ public class GenerateMapPNG {
     			int station_value=0;
 				//对话单质量进行分级判断从而确定画笔颜色
 				if(pixelIntData.getEcio()>=b[0]){
-					g2d.setColor(new Color(0,139,0,alpha-delta));
-//					g2d.setColor(new Color(0,139,0,255));//绘制聚类图专用
+//					g2d.setColor(new Color(0,139,0,alpha-delta));
+					g2d.setColor(new Color(0,139,0,255));//绘制聚类图专用
 				}
 				else if(pixelIntData.getEcio()>=b[1]){
-					g2d.setColor(new Color(0,205,0,alpha-delta));
+//					g2d.setColor(new Color(0,205,0,alpha-delta));
 //					g2d.setColor(new Color(124,252,0,255));//绘制聚类图专用
-//					g2d.setColor(new Color(255,0,0,255));
+					g2d.setColor(new Color(255,0,0,255));
 				}
 				else if(pixelIntData.getEcio()>=b[2]){
-					g2d.setColor(new Color(124,252,0,alpha-delta));
-//					g2d.setColor(new Color(255,165,0,255));//绘制聚类图专用
+//					g2d.setColor(new Color(124,252,0,alpha-delta));
+					g2d.setColor(new Color(255,165,0,255));//绘制聚类图专用
 				}
 				else if(pixelIntData.getEcio()>=b[3]){
 //					g2d.setColor(new Color(255,0,0,255));
@@ -87,13 +89,15 @@ public class GenerateMapPNG {
 					g2d.setColor(new Color(255,0,0,alpha-delta));
 				}
 				else if(pixelIntData.getEcio()==-1602){
-//					g2d.setColor(new Color(0,0,0,255));
-					continue;
+					g2d.setColor(new Color(0,0,0,255));
+//					continue;
 				}
 				else if(pixelIntData.getEcio()<=-1603&&pixelIntData.getEcio()>=-1609){
+//				else if(pixelIntData.getEcio()<=-1603&&pixelIntData.getEcio()>-1621){
 					station_value = 1;
 				}
 				else if(pixelIntData.getEcio()<=-1610&&pixelIntData.getEcio()>=-1673){
+//				else if(pixelIntData.getEcio()<=-1621&&pixelIntData.getEcio()>=-1689){
 					station_value = 2;
 				}
 				else {
